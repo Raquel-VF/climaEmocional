@@ -53,15 +53,17 @@ botao.addEventListener("click", async function(){
     if(clima === "Clear"){
 
         if(periodo === "dia"){
+
             document.body.style.background = "linear-gradient(180deg, #FFD166, #F4A261)";
+            emojiClima = "☀️";
+            frase = "O céu parece leve hoje ☀️";
         }
         else{
             document.body.style.background = "linear-gradient(180deg, #1b1b2f, #0B1020)";
+            emojiClima = "🌙";
+            frase =
+            "A noite também pode trazer calma 🌙";
         }
-
-        emojiClima = "☀️";
-        frase = "O céu parece leve hoje ☀️";
-        document.body.style.background = "linear-gradient(180deg, #FFD166, #F4A261)";
     }
 
     else if(clima === "Rain" || clima === "Drizzle"){
