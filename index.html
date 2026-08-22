@@ -7,17 +7,27 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="background"></div>
+
     <div class="container">
-        <h1>Clima Emocional</h1>
-        <input type="text"
-        id = "cidade"
-        placeholder ="Digite uma cidade">
 
-        <button id="buscar">Buscar Clima</button>
+        <div id="search">
+            <input type="text"
+            id = "cidade"
+            placeholder ="Digite uma cidade">
+            <button id="buscar">Buscar Clima</button>
+        </div>
 
-        <div id="resultado"></div>
+        <div class="card-clima" id="resultado"></div>
 
+        <div class="conteudo">
+            <!-- card -->
+             <div class="rain"> </div>
+             <div class="star">  </div>
+        </div>
     </div>
+
+    
 
     <script src="script.js"></script>
 </body>
