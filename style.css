@@ -22,7 +22,7 @@ body{
 .sol{
     background: linear-gradient( #FFD166, #F4A261);
     border-radius:50%;
-    box-shadow: ;
+    box-shadow: 0 0 20px #FFD166, 0 0 40px #FFD166, 0 0 60px #FFD166, 0 0 80px #FFD166;
 }
 .noite{
     background: linear-gradient( #1B1B2F, #0B1020);
@@ -32,7 +32,7 @@ body{
 }
 .nuvens{
     background: linear-gradient( #C0C0C0, #A9A9A9);
-    transform: translateX(...);
+    transform: translateX(0);
 }
 .rain{
     animation: rain 0.5s linear infinite;
