@@ -7,28 +7,52 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="background"></div>
+    <!-- ============= CENA/PAISAGEM ============= -->
+     <!-- scene/ data-period, data-condition, data-intensity e data-daytime são -->
 
-    <div class="container">
-
-        <div id="search">
-            <input type="text"
-            id = "cidade"
-            placeholder ="Digite uma cidade">
-            <button id="buscar">Buscar Clima</button>
-        </div>
-
-        <div class="card-clima" id="resultado"></div>
-
-        <div class="conteudo">
-            <!-- card -->
-             <div class="rain"> </div>
-             <div class="star">  </div>
-        </div>
+     <!-- controlando via JS ( atmosphere.js -> aplicarAtmosfera) -->
+    
+     <div class="scene" id="scene"></div>
+    
+    <div id="ui"></div>
+    <header class="ui-top"></header>
+    <div class="search-overlay" id="searchOverlay">
+        <form id="searchForm" autocomplete="off">
+            <input type="text" id="searchInput" placeholder="Digite uma cidade" arial-label="Nome da Cidade">
+            <button type="submit" class="text-btn" >Buscar</button>
+        </form>
+        <button class="icon-btn" id="closeSearch" arial-label="Fechar busca">X</button>
     </div>
 
-    
+    <main class="ui-main">
+        <p class="time" id="clockTime">—:—</p>
+        <h1 class="temperature" id="temperature">--°C</h1>
+        <p class="condition" id="conditionLabel">carregando</p>
+        <p class="phrase" id="phrase">o céu esta chegando </p>
+    </main>
 
+    <footer class="ui-bottom">
+
+        <!-- sunrise e sunset (nascer do sol e pôr do sol) -->
+        <div class="sun-times"> 
+            <div class="sun-time">
+                <span class="value" id="sunriseValue">--:--</span>
+                <span class="label" >nascer do sol</span>
+            </div>
+            <div class="sun-time">
+                <span class="value" id="sunsetValue">--:--</span>
+                <span class="label" >pôr do sol</span>
+            </div>
+        </div> 
+
+        <button class="icon-btn menu-toggle" id="menuToggle" arial-label="Mais informações" aria-expanded="false">...</button>
+
+    </footer>
+
+    <!-- status Chave da OpenWeather ausente. Veja config.example.js -->
+    <div class="toast" id="toast"></div>
+    
+    <script src="config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
