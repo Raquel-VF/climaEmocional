@@ -1,229 +1,515 @@
-:root{
-    /* base*/
-    --ink: #172A3A;
-    --steel: #4C7892;
-    --mist: #A9C7D4;
-    --cream: #F3EBDD;
-    --white: #FFFFFF;
-
-    /* tipografia */
-    --font-display: 'DM Serif Display', Georgia, serif;
-    --font-ui: 'Inter', -apple-system, sans-serif;
-
-    /* texto (constante - a legibilidade vem do vignette, não da mudança de cor)*/
-    --text: var(--cream);
-    --text-dim: rgba(243, 235, 221, 0.72);
-    --text-faint: rgba(243, 235, 221, 0.46);
-
-    /* padão de transição atmosferica */
-    --t-slow: 26000ms cubic-bezier(0.4, 0, 0.2, 1);
-    --t-med: 1400ms cubic-bezier(0.4, 0, 0.2, 1);
-    --t-fast: 500ms ease;
-
-    /* valores por atmosfera, sobrescritos por [data-period] abaixo*/
-    --sky-a: #4C7892;
-    --sky-b: #A9C7D4;
-    --sea-a: #24506b;
-    --sea-b: #16303f;
-    --sun-color: #F4C95D;
-    --sun-glow: rgba(244,201,93,0.55);
-    --landscape-color: #16222e;
-    --landscape-color-back: #223447;
-    --scrim-top: rgba(6,12,20,0.32);
-    --scrim-bottom: rgba(6,12,20,0.46);
+/* =========================================================
+   RESET
+========================================================= */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-*{box-sizing: border-box;}
-html, body{height: 100%;}
+html, body{
+    width: 100%;
+    height: 100%;
+}
+
 body{
-        margin: 0;
-        font-family: var(--font-ui);
-        color: var(--text);
-        overflow-x: hidden;
-        background: #0a1420;
-        -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    font-family: "Inter", sans-serif;
+    color: rgba(255, 255, 255, 0.95);
+    background: #172a3a;
+    transition: background 2s ease, color 1s ease;
 }
 
-button{font-family: inherit;}
-
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.001ms !important;
-    }
-}
-
-/* ======================================================================
-   CENA — camadas empilhadas (base -> luz -> paisagem -> nuvens -> chuva
-   -> neblina -> estrelas), cada uma pronta para evoluir independentemente
-   ====================================================================== */
-
-.scene{
+/* =========================================================
+   ATMOSFERA
+========================================================= */
+#atmosphere{
     position: fixed;
     inset: 0;
     overflow: hidden;
+    z-index: 0;
+    background: #172a3a;
+    
 }
 
-/* ---- céu (crossfade real: a camada ativa pode ser "congelada" via JS
-   com um background inline antes da troca de variáveis, para que a
-   camada inativa assuma a cor NOVA por baixo do fade) ---- */
+/* ---------------------------------------------------------
+   CÉU
+--------------------------------------------------------- */
+#sky{
+    position: absolute;
+    inset: -10%;
+    background: radial-gradient(circle at 70% 25%, rgba(255, 220, 150, 0.8), transparent 22%),
+    linear-gradient(180deg, #6faac8 0%, #9bc5d7 45%, #dce8e8 100%);
+    transition: background 4s ease, filter 4s ease;
+    animation: skyMovement 20s ease-in-out infinite alternate;
+}
+
+@keyframes skyMovement {
+    from {
+        transform:  scale(1);
+    }
+    to {
+        transform: scale(1.04);
+    }
+}
+
+/* =========================================================
+   LUZ AMBIENTE
+========================================================= */
+#ambient-light{
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(circle at 70% 25%, rgba(255, 220, 160, 0.25), transparent 35%);
+    filter: blur(40px);
+    pointer-events: none;
+    transition: opacity 4s ease, background 4s ease;
+}
+
+/* =========================================================
+   SOL
+========================================================= */
+#sun{
+    position: absolute;
+    width: clamp(90px, 12vw, 180px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff4c7 0%, #ffe09a 45%, #ffc766 70%, rgba(255, 198, 102, 0)72%);
+    filter: blur(1px);
+    box-shadow: 
+    0 0 30px rgba(255, 215, 130, 0.8)
+    0 0 90px rgba(255, 200, 100, 0.4)
+    0 0 180px rgba(255, 190, 80, 0.2);
+
+    transform: translate(-50%, -50%);
+    transition: 
+    left 3s ease
+    top 3s ease
+    opacity 3s ease
+    transform 3s ease;
+}
+
+/* =========================================================
+   LUA
+========================================================= */
+#moon {
+    position: absolute;
+    width: clamp(50px, 7vw, 100px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ffffff, #dce5f2 55%, #aebbd1 100% );
+    box-shadow: 
+    0 0 30px rgba(220, 230, 255, 0.5),
+    0 0 100px rgba(180, 200, 255, 0.2);
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: opacity 3s ease, left 3s ease, top 3s ease;
+
+}
+
+/* =========================================================
+   ESTRELAS
+========================================================= */
+#stars{
+position: absolute;
+inset: 0;
+opacity: 0;
+transition: opacity 4s ease;
+background-image: radial-gradient(circle, rgba(255, 255, 255, 0.9)1px, transparent 1px);
+background-size: 90px 90px;
+animation: starsMovement 40s linear infinite;
+}
+
+@keyframes starsMovement{
+    from{
+        transform: translatey(0);
+    }
+    to{
+        transform: translateY(-40px);
+    }
+}
+
+/* =========================================================
+   NUVENS — V1
+========================================================= */
+#clouds{
+    position: absolute;
+    width: 100%;
+    height: 45%;
+    left: 0;
+    top: 20%;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 3s ease;
+}
+
+#clouds::before,
+#clouds::after{
+    content: "";
+    position: absolute;
+    width: 55vw;
+    height: 14vw;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    filter: blur(35px);
+}
+
+#clouds::before{
+    top: 10%;
+    left: -10%;
+}
+
+#clouds::after{
+    top: 35%;
+    right: -15%;
+}
 
 
-
-
-/* ======================================================================
-   UI — camada de informação, discreta e centrada na paisagem
-   ====================================================================== */
-.ui{
-    position: fixed; inset: 0;
-    display: flex; 
+/* =========================================================
+   INTERFACE
+========================================================= */
+#app{
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100vh;
+    display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: clamp(20px, 4vw, 60px);
-    pointer-events: none;
+    padding: clamp(24px, 4vw, 60px);
 }
 
-.ui > *{ pointer-events: auto; }
-
-.ui-top{
+/* =========================================================
+   HEADER
+========================================================= */
+.top-bar{
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 }
-.icon-btn{
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.18);
-    color: var(--text);
-    width:38px;
-    height:38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    backdrop-filter: blur(6px);
-    transition: background var(--t-fast), transform var(--t-fast);
-}
-icon-btn:hover{
-    background: rgba(255,255,255,0.16);}
-icon-btn:active{
-    transform: scale(0.94);
-}
-icon-btn:focus-visible{
-    outline: 2px solid var(--text);
-    outline-offset: 2px;
-}
-menu-toggle{
-    font-size: 20px;
-    line-height: 1;
-    letter-spacing: 1px;
-}
-
-.search-overlay{
-    position: absolute;
-    top: clamp(20px, 4vw, 48px);
-    right: clamp(20px, 4vw, 48px);
+.location{
     display: flex;
     align-items: center;
     gap: 10px;
-    background: rgba(10, 16, 24, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    backdrop-filter: blur(10px);
-    border-radius: 999px;
-    padding: 6px 8px 6px 18px;
-    animation: pop var(--t-fast);
-}
-
-.search-overlay[hidden]{display: none;}
-.search-overlay form{ display:flex; align-items: center; gap: 10px; }
-.search-overlay input{
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-family: var(--font-ui);
-    font-size: 14px;
-    letter-spacing: 0.2em;
-    width: clamp(140px, 22vw, 220px);
-}
-.search-overlay input::placeholder{ color: var(--text-faint)}
-.search-overlay input:focus{ outline: none; }
-.text-btn{
     background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 13px;
-    letter-spacing: 0.6em;
+    color: inherit;
     cursor: pointer;
-    padding: 6px 4px;
-}
-
-.text-btn:hover{ color: var(--text); }
-@keyframes pop{
-    from{ ocupacity: 0; transform: translateY(-6px); }
-    to{ ocupacity: 1; transform: none; }
-}
-
-.ui-main{
     text-align: left;
-    max-width: 640px;
 }
-
-.time{
-    margin: 0 0 6px;
+.location-icon{
+    font-size: 22px;
+    opacity: 0.7;
+}
+.location strong{
+    display: block;
     font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 0.16em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-}
-
-.temperature{
-    margin: 0;
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(4.5rem, 13vw,9.5rem);
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    text-shadow: 0 4px 30px rgba(0,0,0,0.25);
-}
-.condition{
-    margin: 6px 0 0;
-    font-size: 14px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-dim);
     font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
-.phrase{
-    margin:6px 0 0;
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: clamp(15px, 1.6vw, 19px);
-    color: var(--text-faint);
-    max-width: 34ch;
+.location small{
+    display: block;
+    margin-top: 3px;
+    font-size: 10px;
+    opacity: 0.6;
+}
+.current-time{
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    opacity: 0.75;
 }
 
-.ui-bottom{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+/* =========================================================
+   BUSCA
+========================================================= */
+.search-panel{
+    position: fixed;
+    z-index: 50;
+    top: 30px;
+    left: 50%;
+    width: min(500px, calc(100% - 40px));
+    transform: translate(-50%, -150%);
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 18px;
+    background: rgba(20, 30, 45, 0.25);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
 }
+.search-panel.active{
+    transform: translate(-50%, 0);
+    opacity: 1;
+}
+
+#search-form{
+    display: flex;
+    gap: 8px;
+}
+#city-input{
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-family: inherit;
+}
+#city-input::placeholder{
+    color: rgba(255, 255, 255, 0.6);
+}
+#search-form button{
+    width: 44px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+.close-search{
+    margin-top: 10px;
+    border: none;
+    background: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+}
+
+/* =========================================================
+   CLIMA
+========================================================= */
+.weather-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.weather-period{
+    margin-bottom: 5px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    opacity: 0.55;
+}
+.temperature{
+    font-family: "DM Serif Display", serif;
+    font-size: clamp(110px, 18vw, 240px);
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+    text-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+}
+.weather-description{
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.emotional-messages{
+    margin-top: 12px;
+    max-width: 400px;
+    font-family: "DM Serif Display", serif;
+    font-size: clamp(17px, 2vw, 23px);
+    opacity: 0.85;
+}
+
+/* =========================================================
+   RODAPÉ
+========================================================= */
+.bottom-bar{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
 .sun-times{
     display: flex;
-    gap: clamp(20px, 4vw, 40px);
+    gap: 30px;
 }
 .sun-time{
-    display: flex; flex-direction: column; gap: 3px;}
-.sun-time .value{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sun-time-icon{
+    font-size: 16px;
+    opacity: 0.7;
+}
+.sun-time small{
+    display: block;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.5;
+}
+.sun-time strong{
+    display: block;
+    margin-top: 2px;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.details-button{
+    border: none;
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   PAINEL DE DETALHES
+========================================================= */
+.details-panel{
+    position: fixed;
+    z-index: 40;
+    right: 25px;
+    bottom: 25px;
+    width: min(360px, calc(100% - 50px));
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    background: rgba(20, 30, 45, 0.25);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    transform: translateY(130%);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.details-panel.active{
+    transform: translateY(0);
+    opacity: 1;
+}
+.close-details{
+    position: absolute;
+    top: 15px;
+    right: 18px;
+    border: none;
+    background: none;
+    color: white;
+    font-size: 25px;
+    font-weight: 300;
+    cursor: pointer;
+    opacity: 0.6;
+}
+.details-label{
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    opacity: 0.5;
+}
+.details-temperature{
+    margin: 15px 0 30px;
+}
+.details-temperature span{
+    font-family:  "DM Serif Display", serif;
+    font-size: 70px;
+}
+.details-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+.details-grid small{
+    display: block;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+}
+.details-grid strong{
+    display: block;
+    margin-top: 5px;
     font-size: 15px;
     font-weight: 400;
-    letter-spacing: 0.2em;
-    color: var(--text-dim);
 }
-.sun-time .label{
-    font-size: 10.5px;
-    letter-spacing: 0.14em;
-    color: var(--text-faint);
-    text-transform: uppercase;
+
+/* =========================================================
+   ERRO
+========================================================= */
+.error-message{
+    position: fixed;
+    z-index: 100;
+    left: 50%;
+    bottom: 30px;
+    transform: translate(-50%, 100px);
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: rgba(20, 20, 20, 0.4);
+    backdrop-filter: blur(15px);
+    font-size: 12px;
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+.error-message.active{
+    transform: translate(-50%, 0);
+    opacity: 1;
+}
+
+
+/* =========================================================
+   ESTADOS NOTURNOS
+========================================================= */
+body.night #sun{
+    opacity: 0;
+}
+body.night #moon{
+    opacity: 1;
+}
+body.night #star{
+    opacity: 0.8;
+}
+body.night #sky{
+    background: radial-gradient(circle at 70% 25%, rgba(120, 145, 190, 0.15), transparent 25%), linear-gradient(1870deg, #101a31 0%, #182746 50%, #0b1222 100%);
+}
+body.night #ambient-light{
+    opacity: 0.3;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+@media (max-width:600px) {
+    #app{
+        padding: 25px 20px;
+    }
+    .temperature{
+        font-size: clamp(100px, 32vw, 170px);
+    }
+    .weather-description{
+        font-size: 10px;
+    }
+    .emotional-messages{
+        font-size: 18px;
+    }
+    .sun-times{
+        gap: 18px;
+    }
+    .bottom-bar{
+        align-items: center;
+    }
+    .sun-time{
+        gap: 5px;
+    }
+    .sun-times-icon{
+        font-size: 13px;
+    }
+}
+
+@media (max-width:380px){
+    .sun-times{
+        flex-direction: column;
+        gap: 8px;
+    }
 }

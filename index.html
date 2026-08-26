@@ -4,55 +4,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clima Emocional</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+    >
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- ============= CENA/PAISAGEM ============= -->
-     <!-- scene/ data-period, data-condition, data-intensity e data-daytime são -->
+    <!-- =====================================================
+         ATMOSFERA
+         Tudo que pertence ao "céu" fica aqui.
+    ====================================================== -->
 
-     <!-- controlando via JS ( atmosphere.js -> aplicarAtmosfera) -->
-    
-     <div class="scene" id="scene"></div>
-    
-    <div id="ui"></div>
-    <header class="ui-top"></header>
-    <div class="search-overlay" id="searchOverlay">
-        <form id="searchForm" autocomplete="off">
-            <input type="text" id="searchInput" placeholder="Digite uma cidade" arial-label="Nome da Cidade">
-            <button type="submit" class="text-btn" >Buscar</button>
-        </form>
-        <button class="icon-btn" id="closeSearch" arial-label="Fechar busca">X</button>
+    <div class="atmosphere">
+        <!-- Gradiente principal -->
+        <div id="sky"></div>
+
+        <!-- Luz ambiente -->
+        <div id="ambient-light"></div>
+
+        <!-- sol -->
+        <div id="sun"></div>
+
+        <!-- lua -->
+        <div id="moon"></div>
+
+        <!-- estrelas -->
+        <div id="stars"></div>
+
+        <!-- nuvens - ainda discretas ma V1 -->
+        <div id="clouds"></div>
     </div>
 
-    <main class="ui-main">
-        <p class="time" id="clockTime">—:—</p>
-        <h1 class="temperature" id="temperature">--°C</h1>
-        <p class="condition" id="conditionLabel">carregando</p>
-        <p class="phrase" id="phrase">o céu esta chegando </p>
+    <!-- =====================================================
+         INTERFACE
+    ====================================================== -->
+    <main id="app">
+
+        <!-- header -->
+
+        <header class="top-bar">
+            <button id="location-button"
+            class="location"
+            aria-label="Alterar cidade">
+
+                <span class="location-icon">⌖</span>
+                <span>
+                    <strong id="city-name">Rio Grande</strong>
+                    <small id="country-name">Brasil</small>
+                </span>    
+            </button>
+
+            <div id="current-time" class="current-time"> --:-- </div>
+        </header>
+
+        <!-- BUSCA -->
+        <div id="search-panel" class="search-panel">
+            <form id="search-form">
+                <input id="city-input"
+                type="text"
+                placeholder="Digite o nome da cidade"
+                autocomplete="off">
+                <button type="submit" aria-label="Buscar cidade"> → </button>
+            </form>
+            <button id="close-search" class="close-search" type="button"> Fechar </button>
+        </div>
+
+        <!-- CLIMA -->
+        <section class="weather-content">
+            <div id="weather-period" class="weather-period"> AGORA </div>
+            <div id="temperature" class="temperature"> --° </div>
+            <div id="weather-description" class="weather-description"> Buscando clima </div>
+         <p id="emotional-message" class="emotional-message"> o céu esta esperando </p>
+        </section>
+
+        <!-- RODAPÉ -->
+         <footer>
+            <div class="bottom-bar">
+                <div class="sun-times">
+
+                    <div class="sun-time">
+                        <span class="sun-time-icon">↑</span>
+                        <div>
+                            <small>nascer</small>
+                            <strong id="sunrise"> --:-- </strong>
+                        </div>
+                    </div>
+
+                    <div class="sun-time">
+                        <span class="sun-time-icon">↑</span>
+                        <div>
+                            <small>pôr do sol</small>
+                            <strong id="sunset"> --:-- </strong>
+                        </div>
+                    </div>
+                </div>
+                <button id="details-button" class="details-button" type="button">detalhes</button>
+            </div>
+         </footer>
+
+         <!-- =================================================
+             PAINEL DE DETALHES
+        ================================================== -->
+
+        <aside id="details-panel" class="details-panel">
+            <button id="close-details" class="close-details" type="button">x</button>
+            <span class="details-label">AGORA</span>
+            <div class="details-temperature">
+                <span id="details-temp"> --° </span>
+            </div>
+
+            <div class="details-grid">
+                <div>
+                    <small>sensação</small>
+                    <strong id="feels-like">--°</strong>
+                </div>
+                <div>
+                    <small>umidade</small>
+                    <strong id="humidity">--%</strong>
+                </div>
+                <div>
+                    <small>vento</small>
+                    <strong id="wind">-- km/h</strong>
+                </div>
+                <div>
+                    <small>nuvens</small>
+                    <strong id="cloudiness">--%</strong>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MENSAGEM DE ERRO -->
+        <div id="error-message" class="error-message"></div>
     </main>
-
-    <footer class="ui-bottom">
-
-        <!-- sunrise e sunset (nascer do sol e pôr do sol) -->
-        <div class="sun-times"> 
-            <div class="sun-time">
-                <span class="value" id="sunriseValue">--:--</span>
-                <span class="label" >nascer do sol</span>
-            </div>
-            <div class="sun-time">
-                <span class="value" id="sunsetValue">--:--</span>
-                <span class="label" >pôr do sol</span>
-            </div>
-        </div> 
-
-        <button class="icon-btn menu-toggle" id="menuToggle" arial-label="Mais informações" aria-expanded="false">...</button>
-
-    </footer>
-
-    <!-- status Chave da OpenWeather ausente. Veja config.example.js -->
-    <div class="toast" id="toast"></div>
-    
-    <script src="config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
